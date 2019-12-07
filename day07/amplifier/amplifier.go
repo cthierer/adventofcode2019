@@ -1,6 +1,11 @@
 package amplifier
 
-import "github.com/cthierer/adventofcode2019/day07/intcode"
+import (
+	"fmt"
+	"sync"
+
+	"github.com/cthierer/adventofcode2019/day07/intcode"
+)
 
 // Callback is called when a amplifier is run.
 type Callback func(intcode.Scanner, intcode.Writer) error
@@ -9,41 +14,54 @@ type Callback func(intcode.Scanner, intcode.Writer) error
 type Amplifier struct {
 	PhaseSetting int
 	next         *Amplifier
+	output       valueQueue
+}
+
+// Run a program on this amplifier.
+func (a *Amplifier) Run(program *intcode.Program, input *valueQueue) error {
+	input.Shift(a.PhaseSetting)
+	return program.Execute(input, &a.output)
 }
 
 // Collection tracks an entier network of amplifiers.
 type Collection struct {
 	root *Amplifier
-	curr *Amplifier
+	last *Amplifier
 }
 
 // Add inserts a new amplifier into the network.
-func (c *Collection) Add(amplifier *Amplifier) {
+func (c *Collection) Add(amp *Amplifier) {
 	if c.root == nil {
-		c.root = amplifier
-		c.curr = c.root
+		c.root = amp
+		c.last = c.root
 		return
 	}
 
-	c.curr.next = amplifier
-	c.curr = c.curr.next
+	c.last.next = amp
+	c.last = c.last.next
 }
 
 // Run runs a program on a collection of amplifiers.
-func (c *Collection) Run(signalIn Signal, runProgram Callback) (Signal, error) {
+func (c *Collection) Run(program *intcode.Program) (int, error) {
+	var wg sync.WaitGroup
 	amp := c.root
-	nextSignal := signalIn
+	nextInput := &c.last.output
+	nextInput.Shift(0)
 
 	for amp != nil {
-		input := valueQueue{Values: []int{amp.PhaseSetting, nextSignal.Value}}
-
-		err := runProgram(&input, &nextSignal)
-		if err != nil {
-			return Signal{}, err
-		}
-
+		wg.Add(1)
+		go func(a *Amplifier, i *valueQueue) {
+			err := a.Run(program.Snapshot(), i)
+			if err != nil {
+				fmt.Printf("amplifier w/ phase %d failed: %v", a.PhaseSetting, err)
+			}
+			wg.Done()
+		}(amp, nextInput)
+		nextInput = &amp.output
 		amp = amp.next
 	}
 
-	return nextSignal, nil
+	wg.Wait()
+
+	return c.last.output.Peek(), nil
 }

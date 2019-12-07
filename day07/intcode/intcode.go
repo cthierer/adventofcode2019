@@ -7,7 +7,7 @@ import (
 
 // Scanner reads inputs.
 type Scanner interface {
-	ScanInt() int
+	ScanInt(chan int)
 }
 
 // Writer writes outputs.
@@ -35,7 +35,10 @@ func (p *Program) clone() *Program {
 
 func (p *Program) scanInt() int {
 	if p.stdIn != nil {
-		return p.stdIn.ScanInt()
+		in := make(chan int)
+		go p.stdIn.ScanInt(in)
+		val := <-in
+		return val
 	}
 
 	var val int
@@ -210,7 +213,7 @@ func (p *Program) Execute(stdIn Scanner, stdOut Writer) error {
 	}
 
 	if !p.halted {
-		return fmt.Errorf("program failed to halt: failed at index %d", p.position)
+		return fmt.Errorf("program failed to halt: failed at index %d, instr %d", p.position, p.Instructions[p.position])
 	}
 
 	return nil

@@ -15,23 +15,19 @@ func runSequence(phaseSettings []int, program *intcode.Program) (int, error) {
 		amps.Add(&amplifier.Amplifier{PhaseSetting: phaseSetting})
 	}
 
-	run := func(input intcode.Scanner, output intcode.Writer) error {
-		return program.Snapshot().Execute(input, output)
-	}
-
-	out, err := amps.Run(amplifier.Signal{Value: 0}, run)
+	val, err := amps.Run(program)
 	if err != nil {
 		return 0, err
 	}
 
-	return out.Value, err
+	return val, err
 }
 
-func getPhaseSettings(num int, numSignals int) (bool, []int) {
-	signals := make([]int, numSignals)
+func getPhaseSettings(num int, numSettings, lowestSetting int) (bool, []int) {
+	signals := make([]int, numSettings)
 	for idx := range signals {
-		val := int(math.Trunc(math.Mod(float64(num)/math.Pow(10, float64(idx)), 10))) - 1
-		if val < 0 || val >= numSignals {
+		val := int(math.Trunc(math.Mod(float64(num)/math.Pow(10, float64(idx)), 10))) - 1 + lowestSetting
+		if val < lowestSetting || val >= numSettings+lowestSetting {
 			return false, nil
 		}
 
@@ -51,7 +47,7 @@ func main() {
 	maxThrusterSignal := 0
 
 	for i := 11111; i <= 55555; i++ {
-		valid, phaseSettings := getPhaseSettings(i, 5)
+		valid, phaseSettings := getPhaseSettings(i, 5, 5)
 		if !valid {
 			continue
 		}
