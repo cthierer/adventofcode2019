@@ -6,6 +6,14 @@ import (
 	"unicode/utf8"
 )
 
+type color int
+
+const (
+	black       color = 0
+	white       color = 1
+	transparent color = 2
+)
+
 func getLayer(pixels []int, layerSize, idx int) []int {
 	startAt := idx * layerSize
 	endAt := startAt + layerSize
@@ -65,6 +73,33 @@ func solvePuzzle1(pixels []int, width, height int) (int, int) {
 	return layerIdx, solution
 }
 
+func getColorAt(pixels []int, width, height, x, y int) color {
+	layerSize := width * height
+	numLayers := len(pixels) / layerSize
+	for i := 0; i < numLayers; i++ {
+		layer := getLayer(pixels, layerSize, i)
+		offset := y*width + x
+		value := color(layer[offset])
+		if value != transparent {
+			return value
+		}
+	}
+
+	return transparent
+}
+
+func renderImage(pixels []int, width, height int) [][]color {
+	image := make([][]color, height)
+	for y := range image {
+		image[y] = make([]color, width)
+		for x := 0; x < width; x++ {
+			color := getColorAt(pixels, width, height, x, y)
+			image[y][x] = color
+		}
+	}
+	return image
+}
+
 func toArray(input string) []int {
 	arr := make([]int, utf8.RuneCountInString(input))
 	for i, r := range input {
@@ -84,4 +119,16 @@ func main() {
 	input := toArray(string(contents))
 	layer, solution := solvePuzzle1(input, width, height)
 	fmt.Printf("layer #%d, solution = %d\n", layer+1, solution)
+
+	image := renderImage(input, width, height)
+	for _, row := range image {
+		for _, col := range row {
+			if col == white {
+				fmt.Print("#")
+			} else {
+				fmt.Print(" ")
+			}
+		}
+		fmt.Println("")
+	}
 }
