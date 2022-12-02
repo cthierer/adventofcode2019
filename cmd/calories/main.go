@@ -9,7 +9,6 @@ import (
 	"github.com/cthierer/advent-of-code/inventory"
 )
 
-// usage: go run main.go < input.txt
 func main() {
 	input, err := io.ReadAll(os.Stdin)
 	if err != nil {
