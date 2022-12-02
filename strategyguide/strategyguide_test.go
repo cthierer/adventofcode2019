@@ -50,7 +50,7 @@ func TestParseStrategyGuide(t *testing.T) {
 	}
 
 	row1 := guide.Get()
-	if row1 == strategyguide.NoEntry || !isRock(row1.Player1()) || !isPaper(row1.Player2()) {
+	if row1 == strategyguide.NoEntry || !isRock(row1.Player1()) || !isRock(row1.Player2()) {
 		t.Fail()
 	}
 
@@ -68,7 +68,7 @@ func TestParseStrategyGuide(t *testing.T) {
 	}
 
 	row3 := guide.Get()
-	if row3 == strategyguide.NoEntry || !isScissors(row3.Player1()) || !isScissors(row3.Player2()) {
+	if row3 == strategyguide.NoEntry || !isScissors(row3.Player1()) || !isRock(row3.Player2()) {
 		t.Fail()
 	}
 }

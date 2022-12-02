@@ -26,12 +26,12 @@ func (r round) Player2() rps.Action {
 func TestGame(t *testing.T) {
 	g := rps.Game{}
 
-	g.Play(newRound(rps.Rock{}, rps.Paper{}))
+	g.Play(newRound(rps.Rock{}, rps.Rock{}))
 	g.Play(newRound(rps.Paper{}, rps.Rock{}))
-	g.Play(newRound(rps.Scissors{}, rps.Scissors{}))
+	g.Play(newRound(rps.Scissors{}, rps.Rock{}))
 
 	_, myScore := g.Scores()
-	if myScore != 15 {
+	if myScore != 12 {
 		t.Fail()
 	}
 }

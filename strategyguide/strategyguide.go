@@ -60,17 +60,28 @@ func actionFromCol1(value string) (rps.Action, error) {
 	}
 }
 
-func actionFromCol2(value string) (rps.Action, error) {
+func actionFromCol2(action rps.Action, value string) (rps.Action, error) {
+	var desiredOutcome int
+
 	switch value {
 	case "X":
-		return rps.Rock{}, nil
+		desiredOutcome = -1
 	case "Y":
-		return rps.Paper{}, nil
+		desiredOutcome = 0
 	case "Z":
-		return rps.Scissors{}, nil
+		desiredOutcome = 1
 	default:
 		return nil, fmt.Errorf("invalid action identifier: %v", value)
 	}
+
+	possibleActions := []rps.Action{rps.Rock{}, rps.Paper{}, rps.Scissors{}}
+	for _, a := range possibleActions {
+		if a.Compare(action) == desiredOutcome {
+			return a, nil
+		}
+	}
+
+	return nil, errors.New("unable to determine which action to take")
 }
 
 func ParseStrategyGuide(input string) (*StrategyGuide, error) {
@@ -88,7 +99,7 @@ func ParseStrategyGuide(input string) (*StrategyGuide, error) {
 			return nil, err
 		}
 
-		player2Action, err := actionFromCol2(cols[1])
+		player2Action, err := actionFromCol2(player1Action, cols[1])
 		if err != nil {
 			return nil, err
 		}
