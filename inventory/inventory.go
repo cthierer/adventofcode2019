@@ -16,3 +16,7 @@ func (t Tuple) Value() int64 {
 type Inventory struct {
 	lineItems []Tuple
 }
+
+func (inv *Inventory) LineItems() []Tuple {
+	return inv.lineItems
+}

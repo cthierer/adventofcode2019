@@ -9,16 +9,6 @@ import (
 	"github.com/cthierer/advent-of-code/inventory"
 )
 
-func selectMax(values []inventory.Tuple) inventory.Tuple {
-	var max inventory.Tuple
-	for _, v := range values {
-		if v.Value() > max.Value() {
-			max = v
-		}
-	}
-	return max
-}
-
 // usage: go run main.go < input.txt
 func main() {
 	input, err := io.ReadAll(os.Stdin)
@@ -31,8 +21,13 @@ func main() {
 		log.Fatalf("failed to parse inentory: %v", err)
 	}
 
-	sums := inv.SumByIndex()
-	max := selectMax(sums)
+	topThree := inv.SumByIndex().Sort().Slice(0, 3)
 
-	fmt.Printf("Largest number of calories: %v (Elf #%v)\n", max.Value(), max.Index()+1)
+	fmt.Printf("Top %v calorie counts:\n", len(topThree.LineItems()))
+	for i, t := range topThree.LineItems() {
+		fmt.Printf("%v.)\tElf #%5v\t%v calories\n", i+1, t.Index()+1, t.Value())
+	}
+
+	total := topThree.Total()
+	fmt.Printf("Total calories: %v\n", total)
 }

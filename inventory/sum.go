@@ -1,6 +1,6 @@
 package inventory
 
-func (inv *Inventory) SumByIndex() []Tuple {
+func (inv *Inventory) SumByIndex() *Inventory {
 	totals := make(map[int]int64)
 	for _, t := range inv.lineItems {
 		totals[t.index] += t.value
@@ -13,5 +13,5 @@ func (inv *Inventory) SumByIndex() []Tuple {
 		i += 1
 	}
 
-	return results
+	return &Inventory{lineItems: results}
 }
