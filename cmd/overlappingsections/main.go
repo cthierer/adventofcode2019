@@ -33,12 +33,17 @@ func main() {
 		log.Fatalf("failed to parse input: %v", err)
 	}
 
-	numOverlaps := 0
+	numFullyOverlapping := 0
+	numPartiallyOverlapping := 0
 	for _, p := range pairs {
-		if p.Overlapping() {
-			numOverlaps += 1
+		if p.FullyOverlapping() {
+			numFullyOverlapping += 1
+		}
+		if p.ParitallyOverlapping() {
+			numPartiallyOverlapping += 1
 		}
 	}
 
-	fmt.Printf("Num. of pairs that have overlapping ranges: %v\n", numOverlaps)
+	fmt.Printf("Num. of pairs that have overlapping ranges: %v\n", numFullyOverlapping)
+	fmt.Printf("Num. of paris that have paritally overlapping ranges: %v\n", numPartiallyOverlapping)
 }

@@ -45,3 +45,7 @@ func (r Range) Stop() int64 {
 func (r Range) Contains(other Range) bool {
 	return r.start <= other.start && r.stop >= other.stop
 }
+
+func (r Range) Overlaps(other Range) bool {
+	return r.Contains(other) || (r.start <= other.stop && r.start >= other.start) || (r.stop >= other.start && r.stop <= other.stop)
+}

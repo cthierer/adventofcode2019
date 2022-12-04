@@ -21,7 +21,7 @@ func TestParsePair(t *testing.T) {
 	}
 }
 
-func TestPairOverlapping(t *testing.T) {
+func TestPairFullyOverlapping(t *testing.T) {
 	scenarios := []struct {
 		pair     section.Pair
 		expected bool
@@ -53,7 +53,7 @@ func TestPairOverlapping(t *testing.T) {
 	}
 
 	for _, s := range scenarios {
-		if s.pair.Overlapping() != s.expected {
+		if s.pair.FullyOverlapping() != s.expected {
 			t.Fail()
 		}
 	}

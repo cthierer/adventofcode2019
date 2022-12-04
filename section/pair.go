@@ -41,6 +41,10 @@ func (p Pair) Assignment2() Range {
 	return p.assignment2
 }
 
-func (p Pair) Overlapping() bool {
+func (p Pair) FullyOverlapping() bool {
 	return p.assignment1.Contains(p.assignment2) || p.assignment2.Contains(p.assignment1)
+}
+
+func (p Pair) ParitallyOverlapping() bool {
+	return p.assignment1.Overlaps(p.assignment2) || p.assignment2.Overlaps(p.assignment1)
 }
