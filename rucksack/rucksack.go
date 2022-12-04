@@ -70,7 +70,7 @@ func (c *ItemCollection) UniqueValues() []ItemType {
 
 func (c *ItemCollection) Intersect(other *ItemCollection) *ItemCollection {
 	intersection := make(map[ItemType]int)
-	for t, _ := range c.contents {
+	for t := range c.contents {
 		if _, ok := other.contents[t]; ok {
 			intersection[t] = 1
 		}
@@ -83,12 +83,53 @@ type Rucksack struct {
 	Compartment2 *ItemCollection
 }
 
-func (r *Rucksack) OverlappingItemTypes() *ItemCollection {
-	return r.Compartment1.Intersect(r.Compartment2)
-}
-
 func NewRucksack() *Rucksack {
 	compartment1 := NewItemCollection()
 	compartment2 := NewItemCollection()
 	return &Rucksack{Compartment1: compartment1, Compartment2: compartment2}
+}
+
+func addContents(contents string, compartment *ItemCollection) {
+	for _, r := range contents {
+		compartment.Add(ParseItemType(r))
+	}
+}
+
+func ParseRucksack(value string) *Rucksack {
+	r := NewRucksack()
+	halfway := len(value) / 2
+	compartment1 := value[0:halfway]
+	compartment2 := value[halfway:]
+
+	addContents(compartment1, r.Compartment1)
+	addContents(compartment2, r.Compartment2)
+
+	return r
+}
+
+func (r *Rucksack) OverlappingItemTypes() *ItemCollection {
+	return r.Compartment1.Intersect(r.Compartment2)
+}
+
+func (r *Rucksack) AllItems() *ItemCollection {
+	allItems := NewItemCollection()
+	allItems.Join(r.Compartment1)
+	allItems.Join(r.Compartment2)
+	return allItems
+}
+
+type Group struct {
+	rucksacks []*Rucksack
+}
+
+func (g *Group) Add(r *Rucksack) {
+	g.rucksacks = append(g.rucksacks, r)
+}
+
+func (g *Group) OverlappingItemTypes() *ItemCollection {
+	itemTypes := g.rucksacks[0].AllItems()
+	for i := 1; i < len(g.rucksacks); i += 1 {
+		itemTypes = itemTypes.Intersect(g.rucksacks[i].AllItems())
+	}
+	return itemTypes
 }

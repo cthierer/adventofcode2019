@@ -10,29 +10,11 @@ import (
 	"github.com/cthierer/advent-of-code/rucksack"
 )
 
-func addContents(contents string, compartment *rucksack.ItemCollection) {
-	for _, r := range contents {
-		compartment.Add(rucksack.ParseItemType(r))
-	}
-}
-
-func parseLine(line string) *rucksack.Rucksack {
-	r := rucksack.NewRucksack()
-	halfway := len(line) / 2
-	compartment1 := line[0:halfway]
-	compartment2 := line[halfway:]
-
-	addContents(compartment1, r.Compartment1)
-	addContents(compartment2, r.Compartment2)
-
-	return r
-}
-
 func parseInput(input string) []*rucksack.Rucksack {
 	lines := strings.Split(input, "\n")
 	rucksacks := make([]*rucksack.Rucksack, len(lines))
 	for i, l := range lines {
-		rucksacks[i] = parseLine(l)
+		rucksacks[i] = rucksack.ParseRucksack(l)
 	}
 	return rucksacks
 }
@@ -51,4 +33,22 @@ func main() {
 	}
 
 	fmt.Printf("Sum of overlapping item type priorities: %v\n", uniqueItems.Sum())
+
+	groups := make([]*rucksack.Group, len(rucksacks)/3)
+	j := 0
+	for i := 0; i < len(rucksacks); i += 3 {
+		g := rucksack.Group{}
+		g.Add(rucksacks[i])
+		g.Add(rucksacks[i+1])
+		g.Add(rucksacks[i+2])
+		groups[j] = &g
+		j += 1
+	}
+
+	uniqueGroupItems := rucksack.NewItemCollection()
+	for _, g := range groups {
+		uniqueGroupItems.Join(g.OverlappingItemTypes())
+	}
+
+	fmt.Printf("Sum of overlapping group item type priorities: %v\n", uniqueGroupItems.Sum())
 }

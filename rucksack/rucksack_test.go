@@ -161,3 +161,37 @@ func TestItemCollectionJoin(t *testing.T) {
 		t.Fail()
 	}
 }
+
+func TestGroupOverlappingItemTypes(t *testing.T) {
+	g1 := rucksack.Group{}
+	g1.Add(rucksack.ParseRucksack("vJrwpWtwJgWrhcsFMMfFFhFp"))
+	g1.Add(rucksack.ParseRucksack("jqHRNqRjqzjGDLGLrsFMfFZSrLrFZsSL"))
+	g1.Add(rucksack.ParseRucksack("PmmdzqPrVvPwwTWBwg"))
+
+	g1UniqueTypes := g1.OverlappingItemTypes().UniqueValues()
+	if len(g1UniqueTypes) != 1 {
+		t.Logf("expected only one unique type, but got %v", len(g1UniqueTypes))
+		t.Fail()
+	}
+
+	if g1UniqueTypes[0].String() != "r" {
+		t.Logf("expected unique type to be r, but got %v", g1UniqueTypes[0].String())
+		t.Fail()
+	}
+
+	g2 := rucksack.Group{}
+	g2.Add(rucksack.ParseRucksack("wMqvLMZHhHMvwLHjbvcjnnSBnvTQFn"))
+	g2.Add(rucksack.ParseRucksack("ttgJtRGJQctTZtZT"))
+	g2.Add(rucksack.ParseRucksack("CrZsJsPPZsGzwwsLwLmpwMDw"))
+
+	g2UniqueTypes := g2.OverlappingItemTypes().UniqueValues()
+	if len(g2UniqueTypes) != 1 {
+		t.Logf("expected only one unique type, but got %v", len(g2UniqueTypes))
+		t.Fail()
+	}
+
+	if g2UniqueTypes[0].String() != "Z" {
+		t.Logf("expected unique types to be Z, but got %v", g2UniqueTypes[0].String())
+		t.Fail()
+	}
+}
