@@ -12,5 +12,5 @@ The file is read in from `stdin` up until `EOF`.
 ## Sample usage
 
 ```bash
-go run cmd/calories/main.go < input-day01.txt
+go run cmd/day01/main.go < input-day01.txt
 ```

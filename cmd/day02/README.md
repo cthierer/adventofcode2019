@@ -18,5 +18,5 @@ Score is computed using the score guide provided:
 ## Sample usage
 
 ```bash
-go run cmd/rockpaperscissors/main.go < input-day02.txt
+go run cmd/day02/main.go < input-day02.txt
 ```
