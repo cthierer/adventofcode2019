@@ -1,7 +1,6 @@
 package cargo
 
 import (
-	"errors"
 	"fmt"
 	"regexp"
 	"sort"
@@ -87,13 +86,8 @@ func (c *Collection) Transfer(cmd Command) error {
 		return fmt.Errorf("invalid stack ID: %v", cmd.ToStack())
 	}
 
-	for i := 0; i < cmd.Quantity(); i += 1 {
-		crate := fromStack.Pop()
-		if crate == NoCrate {
-			return errors.New("invalid system state: cannot transfer from an empty stack")
-		}
-		toStack.Push(crate)
-	}
+	crates := fromStack.Pop(cmd.Quantity())
+	toStack.Push(crates...)
 
 	return nil
 }

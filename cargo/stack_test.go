@@ -28,12 +28,12 @@ func TestStackPop(t *testing.T) {
 		t.FailNow()
 	}
 
-	if v := s.Pop(); v != c2 {
+	if v := s.Pop(1); v[0] != c2 {
 		t.Logf("expected first pop to yield %s, but got %s", c2, v)
 		t.Fail()
 	}
 
-	if v := s.Pop(); v != c1 {
+	if v := s.Pop(1); v[0] != c1 {
 		t.Logf("expected second pop to yield %s, but got %s", c1, v)
 		t.Fail()
 	}
