@@ -48,23 +48,23 @@ func findUniqueSubstring(b *buffer, in string) int {
 	return -1
 }
 
-const (
-	lenStartOfPacket  = 4
-	lenStartOfMessage = 14
-)
-
-func FindStartOfPacket(stream string) int {
-	b := buffer{contents: make([]rune, lenStartOfPacket)}
+func findStartOfSegment(stream string, segmentLen int) int {
+	b := buffer{contents: make([]rune, segmentLen)}
 	if last := findUniqueSubstring(&b, stream); last >= 0 {
 		return last + 1
 	}
 	return -1
 }
 
+const (
+	lenStartOfPacket  = 4
+	lenStartOfMessage = 14
+)
+
+func FindStartOfPacket(stream string) int {
+	return findStartOfSegment(stream, lenStartOfPacket)
+}
+
 func FindStartOfMessage(stream string) int {
-	b := buffer{contents: make([]rune, lenStartOfMessage)}
-	if last := findUniqueSubstring(&b, stream); last >= 0 {
-		return last + 1
-	}
-	return -1
+	return findStartOfSegment(stream, lenStartOfMessage)
 }
