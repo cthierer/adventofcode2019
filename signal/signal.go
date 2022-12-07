@@ -33,20 +33,38 @@ func (b *buffer) full() bool {
 	return b.pos >= len(b.contents)
 }
 
-func FindStartOfPacket(stream string) int {
-	b := buffer{contents: make([]rune, 4)}
-
-	for i := 0; i < len(stream); i += 1 {
-		c := rune(stream[i])
+func findUniqueSubstring(b *buffer, in string) int {
+	for i := 0; i < len(in); i += 1 {
+		c := rune(in[i])
 		if match := b.find(c); match >= 0 {
 			b.shift(match + 1)
 		}
 
 		b.add(c)
 		if b.full() {
-			return i + 1
+			return i
 		}
 	}
+	return -1
+}
 
+const (
+	lenStartOfPacket  = 4
+	lenStartOfMessage = 14
+)
+
+func FindStartOfPacket(stream string) int {
+	b := buffer{contents: make([]rune, lenStartOfPacket)}
+	if last := findUniqueSubstring(&b, stream); last >= 0 {
+		return last + 1
+	}
+	return -1
+}
+
+func FindStartOfMessage(stream string) int {
+	b := buffer{contents: make([]rune, lenStartOfMessage)}
+	if last := findUniqueSubstring(&b, stream); last >= 0 {
+		return last + 1
+	}
 	return -1
 }

@@ -15,10 +15,17 @@ func main() {
 		log.Fatalf("failed to read input: %v", err)
 	}
 
-	s := signal.FindStartOfPacket(string(input))
-	if s == -1 {
+	p := signal.FindStartOfPacket(string(input))
+	if p == -1 {
 		log.Fatalf("failed to find start of packet")
 	}
 
-	fmt.Printf("Packet starts after %v characters\n", s)
+	fmt.Printf("Packet starts after %v characters\n", p)
+
+	m := signal.FindStartOfMessage(string(input))
+	if m == -1 {
+		log.Fatalf("failed to find start of message")
+	}
+
+	fmt.Printf("Message starts after %v characters\n", m)
 }
