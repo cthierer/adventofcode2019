@@ -9,73 +9,69 @@ import (
 	"strings"
 )
 
-func traverseUp(forest [][]int64, x, y int, tallest int64) int64 {
+func traverseUp(forest [][]int64, x, y int, threshold int64, count int) int {
 	if y < 0 {
-		return tallest
+		return count
 	}
 
-	if forest[y][x] >= tallest {
-		tallest = forest[y][x]
+	count += 1
+
+	if forest[y][x] >= threshold {
+		return count
 	}
 
-	return traverseUp(forest, x, y-1, tallest)
+	return traverseUp(forest, x, y-1, threshold, count)
 }
 
-func traverseDown(forest [][]int64, x, y int, tallest int64) int64 {
+func traverseDown(forest [][]int64, x, y int, threshold int64, count int) int {
 	if y >= len(forest) {
-		return tallest
+		return count
 	}
 
-	if forest[y][x] >= tallest {
-		tallest = forest[y][x]
+	count += 1
+
+	if forest[y][x] >= threshold {
+		return count
 	}
 
-	return traverseDown(forest, x, y+1, tallest)
+	return traverseDown(forest, x, y+1, threshold, count)
 }
 
-func traverseLeft(forest [][]int64, x, y int, tallest int64) int64 {
+func traverseLeft(forest [][]int64, x, y int, threshold int64, count int) int {
 	if x < 0 {
-		return tallest
+		return count
 	}
 
-	if forest[y][x] >= tallest {
-		tallest = forest[y][x]
+	count += 1
+
+	if forest[y][x] >= threshold {
+		return count
 	}
 
-	return traverseLeft(forest, x-1, y, tallest)
+	return traverseLeft(forest, x-1, y, threshold, count)
 }
 
-func traverseRight(forest [][]int64, x, y int, tallest int64) int64 {
+func traverseRight(forest [][]int64, x, y int, threshold int64, count int) int {
 	if x >= len(forest[y]) {
-		return tallest
+		return count
 	}
 
-	if forest[y][x] >= tallest {
-		tallest = forest[y][x]
+	count += 1
+
+	if forest[y][x] >= threshold {
+		return count
 	}
 
-	return traverseRight(forest, x+1, y, tallest)
+	return traverseRight(forest, x+1, y, threshold, count)
 }
 
-func isVisible(forest [][]int64, x, y int) bool {
+func scenicScore(forest [][]int64, x, y int) int {
 	height := forest[y][x]
-	if height > traverseUp(forest, x, y-1, int64(0)) {
-		return true
-	}
-
-	if height > traverseDown(forest, x, y+1, int64(0)) {
-		return true
-	}
-
-	if height > traverseLeft(forest, x-1, y, int64(0)) {
-		return true
-	}
-
-	if height > traverseRight(forest, x+1, y, int64(0)) {
-		return true
-	}
-
-	return false
+	scoreUp := traverseUp(forest, x, y-1, height, 0)
+	scoreDown := traverseDown(forest, x, y+1, height, 0)
+	scoreLeft := traverseLeft(forest, x-1, y, height, 0)
+	scoreRight := traverseRight(forest, x+1, y, height, 0)
+	return scoreUp * scoreDown * scoreLeft * scoreRight
 }
 
 func main() {
@@ -104,17 +100,17 @@ func main() {
 
 	height := len(lines)
 	width := len(lines[0])
-	countVisible := (height+width)*2 - 4 // outer edge is always visible
-	log.Printf("outer trees are visible: %v", countVisible)
+	maxScore := 0
 
 	for i := 1; i < height-1; i += 1 {
 		for j := 1; j < width-1; j += 1 {
-			if isVisible(forest, j, i) {
-				log.Printf("tree at col=%v, row=%v is visible", j+1, i+1)
-				countVisible += 1
+			score := scenicScore(forest, j, i)
+			log.Printf("tree at col=%v, row=%v has score %v", j+1, i+1, score)
+			if score > maxScore {
+				maxScore = score
 			}
 		}
 	}
 
-	fmt.Printf("Number of trees visible from the edge: %v\n", countVisible)
+	fmt.Printf("Maximum scenic score: %v\n", maxScore)
 }
