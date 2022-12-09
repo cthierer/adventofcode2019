@@ -82,43 +82,56 @@ func getDirection(head, tail position) direction {
 }
 
 type rope struct {
-	headPositions []position
-	tailPositions []position
+	knots [][]position
+}
+
+func (r *rope) Knot(i int) position {
+	positions := r.knots[i]
+	if len(positions) == 0 {
+		positions = append(positions, position{})
+		r.knots[i] = positions
+	}
+	return positions[len(positions)-1]
 }
 
 func (r *rope) Head() position {
-	if len(r.headPositions) == 0 {
-		r.headPositions = append(r.headPositions, position{})
-	}
-	return r.headPositions[len(r.headPositions)-1]
+	return r.Knot(0)
 }
 
 func (r *rope) Tail() position {
-	if len(r.tailPositions) == 0 {
-		r.tailPositions = append(r.tailPositions, position{})
-	}
-	return r.tailPositions[len(r.tailPositions)-1]
+	return r.Knot(len(r.knots) - 1)
+}
+
+func (r *rope) MoveKnot(i int, d direction) position {
+	next := d(r.Knot(i))
+	r.knots[i] = append(r.knots[i], next)
+	return next
+}
+
+func (r *rope) MoveHead(d direction) position {
+	return r.MoveKnot(0, d)
 }
 
 func (r *rope) Move(d direction, n int64) {
 	for i := int64(0); i < n; i += 1 {
-		head := r.Head()
-		tail := r.Tail()
+		r.MoveHead(d)
 
-		head = d(head)
-		r.headPositions = append(r.headPositions, head)
-		if distance(head, tail) <= 1 {
-			continue
+		for j := 1; j < len(r.knots); j += 1 {
+			last := r.Knot(j - 1)
+			curr := r.Knot(j)
+			if distance(last, curr) <= 1 {
+				continue
+			}
+
+			move := getDirection(last, curr)
+			r.MoveKnot(j, move)
 		}
-
-		td := getDirection(head, tail)
-		r.tailPositions = append(r.tailPositions, td(tail))
 	}
 }
 
 func (r *rope) TailVisited() []position {
 	m := make(map[string]position)
-	for _, p := range r.tailPositions {
+	for _, p := range r.knots[len(r.knots)-1] {
 		m[p.String()] = p
 	}
 
@@ -162,18 +175,32 @@ func main() {
 		log.Fatalf("failed to read input: %v", err)
 	}
 
-	r := rope{}
 	lines := strings.Split(string(input), "\n")
+
+	log.Printf("--- PART 1 ---\n")
+	r1 := rope{knots: make([][]position, 2)}
 	for i, l := range lines {
 		dir, n, err := parseLine(l)
 		if err != nil {
 			log.Fatalf("problem parsing line: %v", err)
 		}
 
-		r.Move(dir, n)
-		log.Printf("%6d\t%-6v\t%-12v\t%-12v", i+1, l, r.Head(), r.Tail())
+		r1.Move(dir, n)
+		log.Printf("%6d\t%-6v\t%-12v\t%-12v", i+1, l, r1.Head(), r1.Tail())
 	}
 
-	uniqueTailPositions := r.TailVisited()
-	fmt.Printf("Unique positions visited by tail: %v\n", len(uniqueTailPositions))
+	log.Printf("--- PART 2 ---\n")
+	r2 := rope{knots: make([][]position, 10)}
+	for i, l := range lines {
+		dir, n, err := parseLine(l)
+		if err != nil {
+			log.Fatalf("problem parsing line: %v", err)
+		}
+
+		r2.Move(dir, n)
+		log.Printf("%6d\t%-6v\t%-12v\t%-12v", i+1, l, r2.Head(), r2.Tail())
+	}
+
+	fmt.Printf("Unique positions visited by tail with 2 knots (part 1): %v\n", len(r1.TailVisited()))
+	fmt.Printf("Unique positions visited by tail with 10 knots (part 2): %v\n", len(r2.TailVisited()))
 }
