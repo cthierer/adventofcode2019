@@ -4,11 +4,16 @@ import (
 	"fmt"
 	"io"
 	"log"
+	"math"
 	"os"
 	"strconv"
 	"strings"
 
 	"github.com/cthierer/advent-of-code/device/cpu"
+)
+
+const (
+	screenWidth = 40
 )
 
 func parseLine(l string) (cpu.Instruction, error) {
@@ -40,27 +45,46 @@ func main() {
 	lines := strings.Split(string(input), "\n")
 	valuesX := make(map[int]int64)
 	for _, l := range lines {
-		i, err := parseLine(l)
+		instr, err := parseLine(l)
 		if err != nil {
 			log.Fatalf("problem processing line: %v", err)
 		}
 
-		log.Printf("loading: %v", i)
-		processor.Load(i)
+		processor.Load(instr)
+		valuesX[processor.Cycle()] = processor.X()
+		cycle := float64(processor.Cycle())
 		for processor.Next() {
-			valuesX[processor.Cycle()] = processor.X()
-			log.Printf("status: %v", processor)
+			x := processor.X()
+			valuesX[processor.Cycle()] = x
+			cycle += 1
 		}
 	}
 
 	totalSignalStrength := int64(0)
-	for i := 19; i < len(valuesX); i += 40 {
-		cycle := int64(i + 1)
+	for i := 20; i < processor.Cycle(); i += 40 {
+		cycle := int64(i)
 		x := valuesX[i]
 		signalStrength := cycle * x
 		totalSignalStrength += signalStrength
-		log.Printf("cycle=%v, value=%v, strength=%v", cycle, valuesX[i], signalStrength)
 	}
 
 	fmt.Printf("Total signal strength: %v\n", totalSignalStrength)
+
+	fmt.Println("Screen output:")
+	for i := 1; i < processor.Cycle(); i += 1 {
+		row := int64(math.Floor(float64(i-1) / screenWidth))
+		col := int64(i) - row*screenWidth - 1
+		x := valuesX[i]
+
+		if row > 0 && col == 0 {
+			fmt.Println()
+		}
+
+		if x-1 <= col && col <= x+1 {
+			fmt.Print("#")
+		} else {
+			fmt.Print(".")
+		}
+	}
+	fmt.Println()
 }

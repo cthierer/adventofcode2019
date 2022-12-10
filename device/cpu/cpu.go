@@ -50,7 +50,7 @@ type Processor struct {
 }
 
 func (c *Processor) Cycle() int {
-	return c.cycle
+	return c.cycle + 1
 }
 
 func (c *Processor) X() int64 {
