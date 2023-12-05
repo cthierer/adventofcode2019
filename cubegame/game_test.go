@@ -22,12 +22,12 @@ func TestGameGetMaxCount(t *testing.T) {
 
 	require.Nil(t, err)
 
-	red := game.GetMaxCount(cubegame.Red)
+	red := game.MaxCount(cubegame.Red)
 	assert.Equal(t, 4, red)
 
-	green := game.GetMaxCount(cubegame.Green)
+	green := game.MaxCount(cubegame.Green)
 	assert.Equal(t, 2, green)
 
-	blue := game.GetMaxCount(cubegame.Blue)
+	blue := game.MaxCount(cubegame.Blue)
 	assert.Equal(t, 6, blue)
 }

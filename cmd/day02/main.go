@@ -31,4 +31,13 @@ func main() {
 	}
 
 	fmt.Printf("Sum of possible game IDs: %v\n", idSum)
+
+	powerSum := 0
+	for _, game := range games.Games {
+		minCubes := game.MinCubes()
+		power := minCubes.Power()
+		powerSum += power
+	}
+
+	fmt.Printf("Sum of the power of the minimum sets: %v\n", powerSum)
 }

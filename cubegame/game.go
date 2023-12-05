@@ -14,15 +14,45 @@ type Game struct {
 	Turns []*CubeSet
 }
 
-func (game *Game) GetMaxCount(color Color) int {
+func (game *Game) Colors() []Color {
+	uniqueColors := make(map[Color]bool)
+	for _, turn := range game.Turns {
+		for _, color := range turn.Colors() {
+			uniqueColors[color] = true
+		}
+	}
+
+	result := make([]Color, len(uniqueColors))
+	idx := 0
+
+	for color := range uniqueColors {
+		result[idx] = color
+		idx += 1
+	}
+
+	return result
+}
+
+func (game *Game) MaxCount(color Color) int {
 	max := 0
 	for _, turn := range game.Turns {
-		count := turn.GetCount(color)
+		count := turn.Count(color)
 		if count > max {
 			max = count
 		}
 	}
 	return max
+}
+
+func (game *Game) MinCubes() *CubeSet {
+	minimums := CubeSet{}
+
+	for _, color := range game.Colors() {
+		count := game.MaxCount(color)
+		minimums.SetCount(color, count)
+	}
+
+	return &minimums
 }
 
 func (game *Game) String() string {

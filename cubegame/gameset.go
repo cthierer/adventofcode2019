@@ -44,7 +44,7 @@ func QueryPossibleGames(games *GameSet, query *CubeSet) *GameSet {
 		match := true
 
 		for _, color := range colors {
-			if game.GetMaxCount(color) > query.GetCount(color) {
+			if game.MaxCount(color) > query.Count(color) {
 				match = false
 				break
 			}

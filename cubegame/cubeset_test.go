@@ -13,12 +13,12 @@ func TestParseCubeSet(t *testing.T) {
 
 	require.Nil(t, err)
 
-	green := set.GetCount(cubegame.Green)
+	green := set.Count(cubegame.Green)
 	assert.Equal(t, 3, green)
 
-	blue := set.GetCount(cubegame.Blue)
+	blue := set.Count(cubegame.Blue)
 	assert.Equal(t, 4, blue)
 
-	red := set.GetCount(cubegame.Red)
+	red := set.Count(cubegame.Red)
 	assert.Equal(t, 1, red)
 }

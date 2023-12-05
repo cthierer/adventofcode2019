@@ -36,12 +36,19 @@ func (set *CubeSet) Colors() []Color {
 	return colors
 }
 
-func (set *CubeSet) GetCount(color Color) int {
+func (set *CubeSet) Count(color Color) int {
 	count, ok := set.counts[color]
 	if !ok {
 		return 0
 	}
 	return count
+}
+
+func (set *CubeSet) Power() int {
+	red := set.Count(Red)
+	green := set.Count(Green)
+	blue := set.Count(Blue)
+	return red * green * blue
 }
 
 func (set *CubeSet) SetCount(color Color, count int) {
