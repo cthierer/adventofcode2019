@@ -1,0 +1,11 @@
+{
+  "name": "advent-of-code",
+  "version": "1.0.0",
+  "description": "2024 Advent of Code solutions",
+  "main": "index.js",
+  "repository": "https://github.com/cthierer/advent-of-code",
+  "author": "Chris Thierer <cthierer@users.noreply.github.com>",
+  "license": "MIT",
+  "private": true,
+  "packageManager": "yarn@4.5.3"
+}
