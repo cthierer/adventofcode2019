@@ -1,5 +1,6 @@
 // node index.js < input.txt
 import run from '../util/run.mjs'
+import { parseInt } from '../util/numbers.mjs'
 
 const appendToSorted = (list, value) => {
     if (list.length < 1) {
@@ -19,14 +20,7 @@ const appendToSorted = (list, value) => {
     ]
 }
 
-const parseInt = (valueStr) => {
-    const valueInt = Number.parseInt(valueStr, 10)
-    if (Number.isNaN(valueInt)) {
-        return new Error(`invalid number: "${valueStr}"`)
-    }
 
-    return valueInt
-}
 
 const computeDistances = (list1, list2) => list1.map((value1, idx) => {
     if (idx > list2.length) {
