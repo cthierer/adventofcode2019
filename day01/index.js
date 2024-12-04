@@ -1,3 +1,4 @@
+// node index.js < input.txt
 
 const appendToSorted = (list, value) => {
     if (list.length < 1) {
@@ -35,6 +36,11 @@ const computeDistances = (list1, list2) => list1.map((value1, idx) => {
     return Math.abs(value1 - value2)
 })
 
+const computeSimularities = (list1, list2) => list1.map((value1) => {
+    const numRepeats = list2.filter((value2) => value1 === value2).length
+    return value1 * numRepeats
+})
+
 const run = (input) => {
     let list1 = []
     let list2 = []
@@ -61,10 +67,14 @@ const run = (input) => {
     })
 
     input.on('end', () => {
-        const deltas = computeDistances(list1, list2)
-        const sum = deltas.reduce((last, curr) => last += curr, 0)
+        const distances = computeDistances(list1, list2)
+        const totalDistance = distances.reduce((last, curr) => last += curr, 0)
+        console.log('Total distance:\t\t', totalDistance)
 
-        console.log('Total distance:\t', sum)
+        const similarities = computeSimularities(list1, list2)
+        const totalSimilarity = similarities.reduce((last, curr) => last += curr, 0)
+        console.log('Total similarity:\t', totalSimilarity)
+
         console.log('Done!')
     })
 }
