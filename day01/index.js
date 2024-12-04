@@ -1,4 +1,5 @@
 // node index.js < input.txt
+import run from '../util/run.mjs'
 
 const appendToSorted = (list, value) => {
     if (list.length < 1) {
@@ -41,42 +42,22 @@ const computeSimularities = (list1, list2) => list1.map((value1) => {
     return value1 * numRepeats
 })
 
-const run = (input) => {
-    let list1 = []
-    let list2 = []
+const runner = run(process.stdin)
+let list1 = []
+let list2 = []
 
-    input.on('readable', () => {
-        let chunk
-        while ((chunk = input.read()) && chunk !== null) {
-            const lines = chunk.toString('utf8').trim().split('\n')
-            lines.forEach((element) => {
-                const line = element.trim() 
-                if (line.length < 1) {
-                    return
-                }
+runner.onLine((line) => {
+    const [list1Str, list2Str] = line.split(/\s+/)
+    list1 = appendToSorted(list1, parseInt(list1Str))
+    list2 = appendToSorted(list2, parseInt(list2Str))    
+})
 
-                const [list1Str, list2Str] = line.split(/\s+/)
-                list1 = appendToSorted(list1, parseInt(list1Str))
-                list2 = appendToSorted(list2, parseInt(list2Str))    
-            })
-        }
-    })
+runner.onEnd(() => {
+    const distances = computeDistances(list1, list2)
+    const totalDistance = distances.reduce((last, curr) => last += curr, 0)
+    console.log('Total distance:\t\t', totalDistance)
 
-    input.on('error', (err) => {
-        console.error(`An error occurred: ${err.message}`)
-    })
-
-    input.on('end', () => {
-        const distances = computeDistances(list1, list2)
-        const totalDistance = distances.reduce((last, curr) => last += curr, 0)
-        console.log('Total distance:\t\t', totalDistance)
-
-        const similarities = computeSimularities(list1, list2)
-        const totalSimilarity = similarities.reduce((last, curr) => last += curr, 0)
-        console.log('Total similarity:\t', totalSimilarity)
-
-        console.log('Done!')
-    })
-}
-
-run(process.stdin)
+    const similarities = computeSimularities(list1, list2)
+    const totalSimilarity = similarities.reduce((last, curr) => last += curr, 0)
+    console.log('Total similarity:\t', totalSimilarity)
+})
