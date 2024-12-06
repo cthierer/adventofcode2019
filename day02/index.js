@@ -21,6 +21,12 @@ const differenceWithinRange = (values, min, max) => values.every((value, idx, ar
 
 const safe = (values, minRange, maxRange) => allIncreasingOrDecreasing(values) && differenceWithinRange(values, minRange, maxRange)
 
+const dampener = function* dampener(values) {
+    for (let idx = 0; idx < values.length; idx += 1) {
+        yield values.toSpliced(idx, 1)
+    }
+}
+
 const runner = run(process.stdin)
 let reports = []
 
@@ -30,6 +36,18 @@ runner.onLine((line) => {
 })
 
 runner.onEnd(() => {
-    const safeReports = reports.filter(report => safe(report, 1, 3))
+    const safeWithinTolerance = (report) => safe(report, 1, 3)
+
+    const safeReports = reports.filter(safeWithinTolerance)
     console.log(`Number of safe reports:\t${safeReports.length}`)
+
+    const safeReportsWithDampener = reports.filter((report) => {
+        for (const variation of dampener(report)) {
+            if (safeWithinTolerance(variation)) {
+                return true
+            }
+        }
+        return false
+    })
+    console.log(`Number of safe reports (with dampener):\t${safeReportsWithDampener.length}`)
 })
